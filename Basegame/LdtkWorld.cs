@@ -6,7 +6,7 @@ using ldtk;
 
 namespace Basegame {
 
-	public class LdtkWorld<D> {
+	public class LdtkWorld {
 		public readonly LdtkJson Json;
 
 		public LdtkWorld(string name) {

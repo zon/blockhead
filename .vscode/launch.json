@@ -9,7 +9,7 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Blockhead/bin/Debug/netcoreapp3.1/Blockhead.dll",
+            "program": "${workspaceFolder}/Blockhead/bin/Debug/net5.0/Blockhead.dll",
             "args": [],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
