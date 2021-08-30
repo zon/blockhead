@@ -9,7 +9,6 @@ namespace Basegame.Client {
 	public class LdtkDrawSystem : ISystem<float> {
 		readonly LevelResources LevelResources;
 		readonly CameraView Camera;
-		readonly SpriteBatch Batch;
 
 		LayerDefinition Collisions;
 		TilesetDefinition Tileset;
@@ -17,15 +16,15 @@ namespace Basegame.Client {
 
 		public bool IsEnabled { get; set; }
 
-		public LdtkDrawSystem(LevelResources levelResources, CameraView camera, SpriteBatch batch) {
+		public LdtkDrawSystem(LevelResources levelResources, CameraView camera) {
 			LevelResources = levelResources;
 			Camera = camera;
-			Batch = batch;
 			IsEnabled = true;
 		}
 
 		public void Update(float state) {
 			var world = LevelResources.World;
+			var batch = Camera.Batch;
 			var matrix = Camera.GetMatrix();
 
 			if (Collisions == null) Collisions = world.GetLayerDefinition("Collisions");
@@ -34,13 +33,13 @@ namespace Basegame.Client {
 
 			var tileSize = new Point((int) Tileset.TileGridSize, (int) Tileset.TileGridSize);
 
-			Batch.Begin(transformMatrix: matrix, samplerState: SamplerState.PointClamp);
+			batch.Begin(transformMatrix: matrix, samplerState: SamplerState.PointClamp);
 			foreach (var level in world.Json.Levels) {
 				var offset = new Point((int) level.WorldX, (int) level.WorldY);
 				foreach (var layer in level.LayerInstances) {
 					if (layer.LayerDefUid != Collisions.Uid) continue;
 					foreach (var tile in layer.AutoLayerTiles) {
-						Batch.Draw(
+						batch.Draw(
 							texture: Texture,
 							position: (View.ToPoint(tile.Px) + offset).ToVector2(),
 							sourceRectangle: new Rectangle(View.ToPoint(tile.Src), tileSize),
@@ -54,7 +53,7 @@ namespace Basegame.Client {
 					}
 				}
 			}
-			Batch.End();
+			batch.End();
 		}
 
 		public void Dispose() {}

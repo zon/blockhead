@@ -8,7 +8,9 @@ namespace Basegame.Client {
 
 	public class CameraView : IDisposable {
 		public readonly ScalingViewportAdapter Viewport;
+		public readonly SpriteBatch Batch;
 		public readonly RenderTarget2D RenderTarget;
+
 		readonly GameWindow Window;
 		readonly OrthographicCamera Orthographic;
 
@@ -21,6 +23,7 @@ namespace Basegame.Client {
 			Window = window;
 			Viewport = new ScalingViewportAdapter(graphicsDevice, width, height);
 			Orthographic = new OrthographicCamera(Viewport);
+			Batch = new SpriteBatch(graphicsDevice);
 			RenderTarget = new RenderTarget2D(
 				graphicsDevice: graphicsDevice,
 				width: Viewport.ViewportWidth,
@@ -33,6 +36,7 @@ namespace Basegame.Client {
 
 		public void Dispose() {
 			Viewport.Dispose();
+			Batch.Dispose();
 			RenderTarget.Dispose();
 		}
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoGame.Aseprite.Documents;
 using DefaultEcs;
 using DefaultEcs.System;
 using Basegame;
@@ -9,11 +10,12 @@ using Basegame.Client;
 namespace Blockhead {
 
 	public class Game : Microsoft.Xna.Framework.Game {
+		World World;
 		GraphicsDeviceManager Graphics;
 		LevelResources LevelResources;
-		SpriteBatch Batch;
 		CameraView Camera;
-		ISystem<float> Rendering;
+		ISystem<float> BackgroundRendering;
+		ISystem<float> ForegroundRendering;
 		SpriteBatch Result;
 
 		public Game() {
@@ -23,7 +25,7 @@ namespace Blockhead {
 		}
 
 		protected override void Initialize() {
-			// TODO: Add your initialization logic here
+			World = new World();
 
 			base.Initialize();
 		}
@@ -37,11 +39,22 @@ namespace Blockhead {
 			Graphics.ApplyChanges();
 
 			LevelResources = LevelResources.Load(Content, "test");
-			Batch = new SpriteBatch(GraphicsDevice);
 			Camera = new CameraView(Window, GraphicsDevice, width, height);
-			Rendering = new LdtkDrawSystem(LevelResources, Camera, Batch);
+			BackgroundRendering = new LdtkDrawSystem(LevelResources, Camera);
+			ForegroundRendering  = new SequentialSystem<float>(
+				new PlayerRenderSystem(World, Camera)
+			);
 			
 			Result = new SpriteBatch(GraphicsDevice);
+
+			var entity = World.CreateEntity();
+			entity.Set(new Player {
+				Width = 0.75f,
+				Height = 0.75f,
+				X = 8,
+				Y = 8,
+				Document = Content.Load<AsepriteDocument>("ghost")
+			});
 		}
 
 		protected override void Update(GameTime gameTime) {
@@ -61,7 +74,15 @@ namespace Blockhead {
 			GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 			GraphicsDevice.Clear(Color.Black);
 
-			Rendering.Update(dt);
+			BackgroundRendering.Update(dt);
+
+			Camera.Batch.Begin(
+				transformMatrix: Camera.GetMatrix(),
+				samplerState: SamplerState.PointClamp,
+				sortMode: SpriteSortMode.FrontToBack
+			);
+			ForegroundRendering.Update(dt);
+			Camera.Batch.End();
 			
 			GraphicsDevice.SetRenderTarget(null);
 
