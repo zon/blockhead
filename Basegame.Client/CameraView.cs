@@ -1,62 +1,111 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoGame.Extended;
-using MonoGame.Extended.ViewportAdapters;
 
 namespace Basegame.Client {
 
 	public class CameraView : IDisposable {
-		public readonly ScalingViewportAdapter Viewport;
+		public readonly float WorldScale;
 		public readonly SpriteBatch Batch;
 		public readonly RenderTarget2D RenderTarget;
 
 		readonly GameWindow Window;
-		readonly OrthographicCamera Orthographic;
+		readonly GraphicsDevice GraphicsDevice;
 
-		public float Zoom {
-			get => Orthographic.Zoom;
-			set { Orthographic.Zoom = value; }
+		Vector2 _Position;
+		float _Zoom;
+
+		public Matrix Matrix { get; private set; }
+		public Matrix InverseMatrix { get; private set; }
+		public Matrix ScreenMatrix { get; private set; }
+		public Matrix InverseScreenMatrix { get; private set; }
+
+		public Vector2 Position {
+			get => _Position;
+			set {
+				_Position = value;
+				UpdateMatrix();
+			}
 		}
 
-		public CameraView(GameWindow window, GraphicsDevice graphicsDevice, int width, int height) {
+		public float Zoom {
+			get => _Zoom;
+			set {
+				_Zoom = value;
+				UpdateScreenMatrix();
+			}
+		}
+
+		public CameraView(
+			GameWindow window,
+			GraphicsDevice graphicsDevice,
+			Point targetSize,
+			float worldScale,
+			float zoom
+		) {
 			Window = window;
-			Viewport = new ScalingViewportAdapter(graphicsDevice, width, height);
-			Orthographic = new OrthographicCamera(Viewport);
+			GraphicsDevice = graphicsDevice;
+			WorldScale = worldScale;
+			_Position = Vector2.Zero;
+			_Zoom = zoom;
+
 			Batch = new SpriteBatch(graphicsDevice);
 			RenderTarget = new RenderTarget2D(
 				graphicsDevice: graphicsDevice,
-				width: Viewport.ViewportWidth,
-				height: Viewport.ViewportHeight,
+				width: targetSize.X,
+				height: targetSize.Y,
 				mipMap: false,
 				preferredFormat: graphicsDevice.PresentationParameters.BackBufferFormat,
 				preferredDepthFormat: DepthFormat.Depth24
 			);
+
+			UpdateMatrix();
 		}
 
 		public void Dispose() {
-			Viewport.Dispose();
 			Batch.Dispose();
 			RenderTarget.Dispose();
 		}
 
-		public void LookAt(Vector2 position) => Orthographic.LookAt(position);
-		public void Move(Vector2 direction) => Orthographic.Move(direction);
-
-		public float Depth(float worldY, float offset = 0) {
-			var y = WorldToScreen(0, worldY + offset).Y;
-			var height = Viewport.ViewportHeight;
-			return MathHelper.Clamp(y / height, 0, 1);
+		public void SetWindow(GraphicsDeviceManager graphics) {
+			graphics.PreferredBackBufferWidth = Calc.Floor(RenderTarget.Width * Zoom);
+			graphics.PreferredBackBufferHeight = Calc.Floor(RenderTarget.Height * Zoom);
+			graphics.ApplyChanges();
 		}
 
-		public float Depth(Vector2 worldPosition, float offset = 0) => Depth(worldPosition.Y, offset);
+		public Vector2 WorldToTarget(Vector2 worldPosition) {
+			return Vector2.Transform(worldPosition, Matrix);
+		}
 
-		public Vector2 ScreenToWorld(Vector2 screenPosition) => Orthographic.ScreenToWorld(screenPosition);
-		public Vector2 ScreenToWorld(float x, float y) => Orthographic.ScreenToWorld(x, y);
-		public Vector2 WorldToScreen(Vector2 worldPosition) => Orthographic.WorldToScreen(worldPosition);
-		public Vector2 WorldToScreen(float x, float y) => Orthographic.WorldToScreen(x, y);
+		public Vector2 TargetToWorld(Vector2 targetPosition) {
+			return Vector2.Transform(targetPosition, InverseMatrix);
+		}
 
-		public Matrix GetMatrix() => Orthographic.GetViewMatrix();
+		public Vector2 WorldToScreen(Vector2 worldPosition) {
+			return Vector2.Transform(worldPosition, ScreenMatrix);
+		}
+
+		public Vector2 ScreenToWorld(Vector2 screenPosition) {
+			return Vector2.Transform(screenPosition, InverseScreenMatrix);
+		}
+
+		public Vector2 WorldToTarget(float x, float y) => WorldToTarget(new Vector2(x, y));
+		public Vector2 TargetToWorld(float x, float y) => TargetToWorld(new Vector2(x, y));
+		public Vector2 WorldToScreen(float x, float y) => WorldToScreen(new Vector2(x, y));
+		public Vector2 ScreenToWorld(float x, float y) => ScreenToWorld(new Vector2(x, y));
+
+		void UpdateMatrix() {
+			Matrix = 
+				Matrix.CreateTranslation(new Vector3(Position, 0)) *
+				Matrix.CreateScale(WorldScale, WorldScale, 1);
+			InverseMatrix = Matrix.Invert(Matrix);
+			UpdateScreenMatrix();
+		}
+
+		void UpdateScreenMatrix() {
+			ScreenMatrix = Matrix * Matrix.CreateScale(Zoom, Zoom, 1);
+			InverseScreenMatrix = Matrix.Invert(ScreenMatrix);
+		}
 
 	}
 

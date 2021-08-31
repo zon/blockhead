@@ -31,19 +31,17 @@ namespace Blockhead {
 		}
 
 		protected override void LoadContent() {
-			var width = 1024;
-			var height = 1024;
-
-			Graphics.PreferredBackBufferWidth = width;
-			Graphics.PreferredBackBufferHeight = height;
-			Graphics.ApplyChanges();
+			var width = 256;
+			var height = 256;
 
 			LevelResources = LevelResources.Load(Content, "test");
-			Camera = new CameraView(Window, GraphicsDevice, width, height);
+			Camera = new CameraView(Window, GraphicsDevice, new Point(width, height), 16, 4);
 			BackgroundRendering = new LdtkDrawSystem(LevelResources, Camera);
 			ForegroundRendering  = new SequentialSystem<float>(
 				new PlayerRenderSystem(World, Camera)
 			);
+
+			Camera.SetWindow(Graphics);
 			
 			Result = new SpriteBatch(GraphicsDevice);
 
@@ -77,7 +75,7 @@ namespace Blockhead {
 			BackgroundRendering.Update(dt);
 
 			Camera.Batch.Begin(
-				transformMatrix: Camera.GetMatrix(),
+				transformMatrix: Matrix.Identity,
 				samplerState: SamplerState.PointClamp,
 				sortMode: SpriteSortMode.FrontToBack
 			);
@@ -94,7 +92,7 @@ namespace Blockhead {
 				color: Color.White,
 				rotation: 0,
 				origin: Vector2.Zero,
-				scale: Vector2.One * View.SCALE,
+				scale: Vector2.One * Camera.Zoom,
 				effects: SpriteEffects.None,
 				layerDepth: 0
 			);

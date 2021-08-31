@@ -25,7 +25,6 @@ namespace Basegame.Client {
 		public void Update(float state) {
 			var world = LevelResources.World;
 			var batch = Camera.Batch;
-			var matrix = Camera.GetMatrix();
 
 			if (Collisions == null) Collisions = world.GetLayerDefinition("Collisions");
 			if (Tileset == null) Tileset = world.GetTileset(Collisions.AutoTilesetDefUid.Value);
@@ -33,7 +32,7 @@ namespace Basegame.Client {
 
 			var tileSize = new Point((int) Tileset.TileGridSize, (int) Tileset.TileGridSize);
 
-			batch.Begin(transformMatrix: matrix, samplerState: SamplerState.PointClamp);
+			batch.Begin(transformMatrix: Matrix.Identity, samplerState: SamplerState.PointClamp);
 			foreach (var level in world.Json.Levels) {
 				var offset = new Point((int) level.WorldX, (int) level.WorldY);
 				foreach (var layer in level.LayerInstances) {
