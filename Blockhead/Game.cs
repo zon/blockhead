@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoGame.Aseprite.Documents;
 using DefaultEcs;
 using DefaultEcs.System;
@@ -13,7 +12,9 @@ namespace Blockhead {
 		World World;
 		GraphicsDeviceManager Graphics;
 		LevelResources LevelResources;
+		Grid Grid;
 		CameraView Camera;
+		ISystem<float> Logic;
 		ISystem<float> BackgroundRendering;
 		ISystem<float> ForegroundRendering;
 		SpriteBatch Result;
@@ -31,10 +32,16 @@ namespace Blockhead {
 		}
 
 		protected override void LoadContent() {
+			LevelResources = LevelResources.Load(Content, "test");
+			Grid = new Grid(LevelResources.World);
+
+			Logic = new SequentialSystem<float>(
+				new PlayerInputSystem(World),
+				new PlayerPhysicsSystem(World)
+			);
+
 			var width = 256;
 			var height = 256;
-
-			LevelResources = LevelResources.Load(Content, "test");
 			Camera = new CameraView(Window, GraphicsDevice, new Point(width, height), 16, 4);
 			BackgroundRendering = new LdtkDrawSystem(LevelResources, Camera);
 			ForegroundRendering  = new SequentialSystem<float>(
@@ -47,8 +54,6 @@ namespace Blockhead {
 
 			var entity = World.CreateEntity();
 			entity.Set(new Player {
-				Width = 0.75f,
-				Height = 0.75f,
 				X = 8,
 				Y = 8,
 				Document = Content.Load<AsepriteDocument>("ghost")
@@ -56,10 +61,8 @@ namespace Blockhead {
 		}
 
 		protected override void Update(GameTime gameTime) {
-			// var dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
-			// TODO: Add your update logic here
-
+			var dt = (float) gameTime.ElapsedGameTime.TotalSeconds;
+			Logic.Update(dt);
 			base.Update(gameTime);
 		}
 

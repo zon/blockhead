@@ -12,6 +12,8 @@ namespace Basegame {
 			Spawns = (spawns != null) ? spawns : new Spawn[0];
 		}
 
+		public Grid(LdtkWorld world) : this(world.GetNodes(), world.GetSpawns()) {}
+
 		public Node Get(long x, long y) {
 			return Get(new Coord(x, y));
 		}

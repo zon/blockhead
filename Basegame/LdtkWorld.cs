@@ -78,6 +78,7 @@ namespace Basegame {
 			var entities = GetLayerDefinition("Entities");
 			var start = GetEntityDefinition("Start");
 			var mob = GetEntityDefinition("Mob");
+			if (entities == null || start == null || mob == null) return new Spawn[0];
 			foreach (var level in Json.Levels) {
 				var layer = level.GetLayer(entities);
 				var offset = layer.GetOffset(level, entities);
