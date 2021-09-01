@@ -95,15 +95,16 @@ namespace Basegame.Client {
 		public Vector2 ScreenToWorld(float x, float y) => ScreenToWorld(new Vector2(x, y));
 
 		void UpdateMatrix() {
-			Matrix = 
-				Matrix.CreateTranslation(new Vector3(Position, 0)) *
-				Matrix.CreateScale(WorldScale, WorldScale, 1);
+			Matrix = Matrix.CreateScale(WorldScale, WorldScale, 1);
 			InverseMatrix = Matrix.Invert(Matrix);
 			UpdateScreenMatrix();
 		}
 
 		void UpdateScreenMatrix() {
-			ScreenMatrix = Matrix * Matrix.CreateScale(Zoom, Zoom, 1);
+			ScreenMatrix =
+				Matrix.CreateTranslation(new Vector3(Position, 0)) *
+				Matrix *
+				Matrix.CreateScale(Zoom, Zoom, 1);
 			InverseScreenMatrix = Matrix.Invert(ScreenMatrix);
 		}
 

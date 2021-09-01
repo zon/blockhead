@@ -37,7 +37,7 @@ namespace Blockhead {
 
 			Logic = new SequentialSystem<float>(
 				new PlayerInputSystem(World),
-				new PlayerPhysicsSystem(World)
+				new PlayerPhysicsSystem(World, Grid)
 			);
 
 			var width = 256;

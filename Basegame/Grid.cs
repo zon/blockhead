@@ -26,7 +26,34 @@ namespace Basegame {
 
 		public bool IsSolid(Coord coord) {
 			var node = Get(coord);
-			return node != null ? node.Solid : true;
+			if (node == null) {
+				return true;
+			} else {
+				if (node.Solid) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}
+
+		public bool IsSolid(long x, long y) {
+			return IsSolid(new Coord(x, y));
+		}
+
+		public bool IsSolid(float x, float y, float width, float height) {
+			var ay = Calc.Floor(y);
+			var by = Calc.Floor(y + height);
+			var ax = Calc.Floor(x);
+			var bx = Calc.Floor(x + width);
+			for (var yy = ay; yy <= by; yy++) {
+				for (var xx = ax; xx <= bx; xx++) {
+					if (IsSolid(xx, yy)) {
+						return true;
+					}
+				}
+			}
+			return false;
 		}
 
 		// https://stackoverflow.com/a/3706260

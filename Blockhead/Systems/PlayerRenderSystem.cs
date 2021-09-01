@@ -15,7 +15,11 @@ namespace Blockhead {
 
 		protected override void Update(float dt, ref Player player) {
 			var texture = player.Document.Texture;
-			var position = Camera.WorldToTarget(player.X, player.Y);
+			var size = Camera.WorldToTarget(Player.Width, Player.Height);
+			var position = Camera.WorldToTarget(player.X, player.Y) - new Vector2(
+				texture.Width - size.X,
+				texture.Height - size.Y
+			) / 2;
 			Camera.Batch.Draw(
 				texture,
 				position,
