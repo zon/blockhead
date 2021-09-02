@@ -1,7 +1,6 @@
 using DefaultEcs;
 using DefaultEcs.System;
 using Microsoft.Xna.Framework;
-using Basegame;
 using Basegame.Client;
 
 namespace Blockhead {
