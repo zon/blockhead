@@ -11,6 +11,7 @@ namespace Blockhead {
 	public class Game : Microsoft.Xna.Framework.Game {
 		World World;
 		GraphicsDeviceManager Graphics;
+		AsepriteDocument PlayerGraphics;
 		LevelResources LevelResources;
 		Grid Grid;
 		CameraView Camera;
@@ -32,6 +33,8 @@ namespace Blockhead {
 		}
 
 		protected override void LoadContent() {
+			PlayerGraphics = Content.Load<AsepriteDocument>("big-jumper");
+
 			LevelResources = LevelResources.Load(Content, "test");
 			Grid = new Grid(LevelResources.World);
 
@@ -45,7 +48,7 @@ namespace Blockhead {
 			Camera = new CameraView(Window, GraphicsDevice, new Point(width, height), 16, 4);
 			BackgroundRendering = new LdtkDrawSystem(LevelResources, Camera);
 			ForegroundRendering  = new SequentialSystem<float>(
-				new PlayerRenderSystem(World, Camera)
+				new SpriteRenderSystem(World, Camera)
 			);
 
 			Camera.SetWindow(Graphics);
@@ -53,11 +56,8 @@ namespace Blockhead {
 			Result = new SpriteBatch(GraphicsDevice);
 
 			var entity = World.CreateEntity();
-			entity.Set(new Player {
-				X = 8,
-				Y = 8,
-				Document = Content.Load<AsepriteDocument>("ghost")
-			});
+			entity.Set(Player.Create(8, 8));
+			entity.Set(Sprite.Create(PlayerGraphics, "stand"));
 		}
 
 		protected override void Update(GameTime gameTime) {

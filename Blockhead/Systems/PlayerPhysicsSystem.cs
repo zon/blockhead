@@ -1,4 +1,3 @@
-using System;
 using DefaultEcs;
 using DefaultEcs.System;
 using Basegame;
@@ -16,8 +15,8 @@ namespace Blockhead {
 			if (Grid.IsSolid(
 				player.X + player.DX * dt,
 				player.Y,
-				Player.Width,
-				Player.Height
+				player.Width,
+				player.Height
 			)) {
 				player.DX *= -Player.Bounce;
 			}
@@ -27,8 +26,8 @@ namespace Blockhead {
 			if (Grid.IsSolid(
 				player.X,
 				player.Y + player.DY * dt,
-				Player.Width,
-				Player.Height
+				player.Width,
+				player.Height
 			)) {
 				player.DY *= -Player.Bounce;
 			}
