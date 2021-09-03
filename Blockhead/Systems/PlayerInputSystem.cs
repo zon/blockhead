@@ -27,7 +27,11 @@ namespace Blockhead {
 				input.MoveY = 0;
 			}
 
-			// input.Jump = state.IsKeyDown(Keys.W);
+			if (state.IsKeyDown(Keys.W)) {
+				input.Jump = 0;
+			} else {
+				input.Jump += dt;
+			}
 		}
 
 	}

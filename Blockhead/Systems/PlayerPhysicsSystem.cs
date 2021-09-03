@@ -25,11 +25,13 @@ namespace Blockhead {
 
 			var ay = input.MoveY * Player.Accel;
 			player.DY += ay * dt;
-			player.DY += -player.DY * Player.Friction * dt; 
+			player.DY += -player.DY * Player.Friction * dt;
 
-			// player.DX = input.MoveX * 5;
-			// player.DY = input.MoveY * 5;
-			// player.DY += Player.Gravity / 4;
+			// player.DY += Player.Gravity * dt;
+
+			// if (player.Grounded == 0 && input.Jump < PlayerInput.Flex) {
+			// 	player.DY += Player.Jump;
+			// }
 
 			var nx = player.X + player.DX * dt;
 			if (Grid.IsSolid(
@@ -38,16 +40,27 @@ namespace Blockhead {
 				player.Width,
 				player.Height
 			)) {
-				player.DX *= -Player.Bounce;
+				if (player.DX > 0) {
+					player.X = Calc.Floor(nx + player.Width) - player.Width;
+				} else if (player.DX < 0) {
+					player.X = Calc.Floor(nx) + 1;
+				}
+				player.DX = 0;
 			}
 			
+			var ny = player.Y + player.DY * dt;
 			if (Grid.IsSolid(
 				player.X,
-				player.Y + player.DY * dt,
+				ny,
 				player.Width,
 				player.Height
 			)) {
-				player.DY *= -Player.Bounce;
+				if (player.DY > 0) {
+					player.Y = Calc.Floor(ny + player.Height) - player.Height;
+				} else if (player.DY < 0) {
+					player.Y = Calc.Floor(ny) + 1;
+				}
+				player.DY = 0;
 			}
 			
 			player.X += player.DX * dt;

@@ -44,8 +44,10 @@ namespace Basegame {
 		public bool IsSolid(float x, float y, float width, float height) {
 			var ay = Calc.Floor(y);
 			var by = Calc.Floor(y + height);
+			if ((y + height) % 1 == 0) by -= 1;
 			var ax = Calc.Floor(x);
 			var bx = Calc.Floor(x + width);
+			if ((x + width) % 1 == 0) bx -= 1;
 			for (var yy = ay; yy <= by; yy++) {
 				for (var xx = ax; xx <= bx; xx++) {
 					if (IsSolid(xx, yy)) {
