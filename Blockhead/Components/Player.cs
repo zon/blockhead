@@ -9,9 +9,13 @@ namespace Blockhead {
 		public float Height;
 		public float DX;
 		public float DY;
-		public const float Friction = 4f;
-		public const float Bounce = 0.3f;
-		public const float Accel = 5f;
+		public const float Bounce = 0.05f;
+		public const float Gravity = 9.8f;
+
+		public const float AccelTime = 0.5f;
+		public const float MaxVelocity = 5;
+		public const float Friction = 5 / AccelTime;
+		public const float Accel = MaxVelocity * Friction;
 
 		public static Player Create(float x, float y) {
 			return new Player {

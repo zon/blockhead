@@ -4,16 +4,30 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Blockhead {
 
-	public class PlayerInputSystem : AComponentSystem<float, Player> {
+	public class PlayerInputSystem : AComponentSystem<float, PlayerInput> {
 
 		public PlayerInputSystem(World world) : base(world) {}
 
-		protected override void Update(float dt, ref Player player) {
+		protected override void Update(float dt, ref PlayerInput input) {
 			var state = Keyboard.GetState();
-			if (state.IsKeyDown(Keys.A)) player.DX -= Player.Accel * dt;
-			if (state.IsKeyDown(Keys.D)) player.DX += Player.Accel * dt;
-			if (state.IsKeyDown(Keys.W)) player.DY -= Player.Accel * dt;
-			if (state.IsKeyDown(Keys.S)) player.DY += Player.Accel * dt;
+
+			if (state.IsKeyDown(Keys.A)) {
+				input.MoveX = -1;
+			} else if (state.IsKeyDown(Keys.D)) {
+				input.MoveX = 1;
+			} else {
+				input.MoveX = 0;
+			}
+
+			if (state.IsKeyDown(Keys.W)) {
+				input.MoveY = -1;
+			} else if (state.IsKeyDown(Keys.S)) {
+				input.MoveY = 1;
+			} else {
+				input.MoveY = 0;
+			}
+
+			// input.Jump = state.IsKeyDown(Keys.W);
 		}
 
 	}
