@@ -16,7 +16,7 @@ namespace Blockhead {
 		public const float MaxVelocity = 5;
 		public const float Friction = 5 / AccelTime;
 		public const float Accel = MaxVelocity * Friction;
-		public const float Jump = 200f;
+		public const float Jump = -8;
 
 		public static Player Create(float x, float y) {
 			return new Player {

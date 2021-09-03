@@ -6,6 +6,13 @@ namespace Blockhead {
 		public float Jump;
 
 		public const float Flex = 0.2f;
+
+		public static PlayerInput Create() {
+			return new PlayerInput {
+				Jump = float.MaxValue
+			};
+		}
+
 	}
 
 }

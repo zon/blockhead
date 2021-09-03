@@ -57,7 +57,7 @@ namespace Blockhead {
 
 			var entity = World.CreateEntity();
 			entity.Set(Player.Create(8, 8));
-			entity.Set(new PlayerInput());
+			entity.Set(PlayerInput.Create());
 			entity.Set(Sprite.Create(PlayerGraphics, "stand"));
 		}
 

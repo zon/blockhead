@@ -1,6 +1,7 @@
 using DefaultEcs;
 using DefaultEcs.System;
 using Basegame;
+using System;
 
 namespace Blockhead {
 
@@ -23,15 +24,21 @@ namespace Blockhead {
 			player.DX += ax * dt;
 			player.DX += -player.DX * Player.Friction * dt;
 
-			var ay = input.MoveY * Player.Accel;
-			player.DY += ay * dt;
-			player.DY += -player.DY * Player.Friction * dt;
+			// var ay = input.MoveY * Player.Accel;
+			// player.DY += ay * dt;
+			// player.DY += -player.DY * Player.Friction * dt;
 
-			// player.DY += Player.Gravity * dt;
+			var g = 1f;
+			if (input.Jump > 0 || player.DY > 0) {
+				g = 2;
+			}
+			player.DY += Player.Gravity * g * dt;
 
-			// if (player.Grounded == 0 && input.Jump < PlayerInput.Flex) {
-			// 	player.DY += Player.Jump;
-			// }
+			if (input.Jump < PlayerInput.Flex && player.Grounded == 0) {
+				player.DY += Player.Jump;
+			}
+
+			player.Grounded += dt;
 
 			var nx = player.X + player.DX * dt;
 			if (Grid.IsSolid(
@@ -48,15 +55,17 @@ namespace Blockhead {
 				player.DX = 0;
 			}
 			
+			var dy = player.DY * dt;
 			var ny = player.Y + player.DY * dt;
 			if (Grid.IsSolid(
 				player.X,
-				ny,
+				Math.Min(player.Y, player.Y + dy),
 				player.Width,
-				player.Height
+				Math.Max(player.Height, player.Height +dy)
 			)) {
 				if (player.DY > 0) {
 					player.Y = Calc.Floor(ny + player.Height) - player.Height;
+					player.Grounded = 0;
 				} else if (player.DY < 0) {
 					player.Y = Calc.Floor(ny) + 1;
 				}
