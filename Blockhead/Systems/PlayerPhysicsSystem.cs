@@ -24,6 +24,10 @@ namespace Blockhead {
 			player.DX += ax * dt;
 			player.DX += -player.DX * Player.Friction * dt;
 
+			if (input.MoveX != 0) {
+				player.Facing = input.MoveX;
+			}
+
 			// var ay = input.MoveY * Player.Accel;
 			// player.DY += ay * dt;
 			// player.DY += -player.DY * Player.Friction * dt;

@@ -20,7 +20,7 @@ namespace Blockhead {
 		}
 
 		public Rectangle GetFrame() {
-			return Document.Frames[FrameIndex].ToRectangle();
+			return Document.Frames[Tag.From + FrameIndex].ToRectangle();
 		}
 
 		public void Play(string tag) {
@@ -30,10 +30,12 @@ namespace Blockhead {
 		}
 
 		public void Update(float dt) {
-			Interval += dt;
+			if (FrameRate <= 0) return;
+			Interval += dt / FrameRate;
 			while (Interval > 1) {
 				Interval -= 1;
-				FrameIndex = (FrameIndex + 1) % (Tag.From - Tag.To + 1);
+				var length = Tag.To - Tag.From + 1;
+				FrameIndex = (FrameIndex + 1) % length;
 			} 
 		}
 
